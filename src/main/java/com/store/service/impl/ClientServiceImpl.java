@@ -6,7 +6,6 @@ import com.store.repository.ClientRepository;
 import com.store.service.ClientService;
 import com.store.service.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,11 +15,11 @@ import java.util.Optional;
 public class ClientServiceImpl implements ClientService {
 
     @Autowired
-    private ClientRepository clientRepository;
+    private ClientRepository repository;
 
     @Override
     public Client find(Long id) {
-        Optional<Client> client = clientRepository.findById(id);
+        Optional<Client> client = repository.findById(id);
         return client.orElseThrow(() -> new ObjectNotFoundException(
                 "Client with id " + id + " not found"
         ));
@@ -28,13 +27,13 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<Client> findAll() {
-        return clientRepository.findAll();
+        return repository.findAll();
     }
 
     @Override
     public Client save(Client client) {
         client.setId(null);
-        client = clientRepository.save(client);
+        client = repository.save(client);
         return client;
     }
 
@@ -42,7 +41,7 @@ public class ClientServiceImpl implements ClientService {
     public Client update(Client client) {
         Client newObj = find(client.getId());
         updateData(newObj, client);
-        return clientRepository.save(newObj);
+        return repository.save(newObj);
     }
 
     private void updateData(Client newClient, Client oldClient) {
@@ -54,7 +53,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public void delete(Long id) {
         find(id);
-        clientRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
     public Client fromDto(ClientDTO dto) {
