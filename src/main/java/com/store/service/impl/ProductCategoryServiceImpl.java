@@ -4,8 +4,10 @@ import com.store.dto.ProductCategoryDTO;
 import com.store.entity.ProductCategory;
 import com.store.repository.ProductCategoryRepository;
 import com.store.service.ProductCategoryService;
+import com.store.service.exceptions.DataIntegrityException;
 import com.store.service.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,7 +54,12 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     @Override
     public void delete(Long id) {
         find(id);
-        repository.deleteById(id);
+        try {
+            repository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityException("Cannot delete a Category that has Products");
+        }
+
     }
 
     public ProductCategory fromDto(ProductCategoryDTO dto) {
